@@ -1,4 +1,4 @@
-package io.github.jwgibanez.contacts
+package io.github.jwgibanez.contacts.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,8 +7,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.jwgibanez.contacts.R
 import io.github.jwgibanez.contacts.databinding.ActivityItemDetailBinding
 
+@AndroidEntryPoint
 class ItemDetailHostActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration

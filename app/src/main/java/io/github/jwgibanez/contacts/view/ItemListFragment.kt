@@ -1,4 +1,4 @@
-package io.github.jwgibanez.contacts
+package io.github.jwgibanez.contacts.view
 
 import android.os.Build
 import android.os.Bundle
@@ -10,29 +10,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import io.github.jwgibanez.contacts.R
 import io.github.jwgibanez.contacts.placeholder.PlaceholderContent;
 import io.github.jwgibanez.contacts.databinding.FragmentItemListBinding
 import io.github.jwgibanez.contacts.databinding.ItemListContentBinding
-
-/**
- * A Fragment representing a list of Pings. This fragment
- * has different presentations for handset and larger screen devices. On
- * handsets, the fragment presents a list of items, which when touched,
- * lead to a {@link ItemDetailFragment} representing
- * item details. On larger screens, the Navigation controller presents the list of items and
- * item details side-by-side using two vertical panes.
- */
+import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 
 class ItemListFragment : Fragment() {
 
-    /**
-     * Method to intercept global key events in the
-     * item list fragment to trigger keyboard shortcuts
-     * Currently provides a toast when Ctrl + Z and Ctrl + F
-     * are triggered
-     */
+    private val viewModel: ContactsViewModel by activityViewModels()
+
     private val unhandledKeyEventListenerCompat = ViewCompat.OnUnhandledKeyEventListenerCompat { v, event ->
         if (event.keyCode == KeyEvent.KEYCODE_Z && event.isCtrlPressed) {
             Toast.makeText(
@@ -53,23 +43,20 @@ class ItemListFragment : Fragment() {
     }
 
     private var _binding: FragmentItemListBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
-
+    ): View {
         _binding = FragmentItemListBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.fetchUsers()
 
         ViewCompat.addOnUnhandledKeyEventListener(view, unhandledKeyEventListenerCompat)
 
@@ -86,7 +73,7 @@ class ItemListFragment : Fragment() {
             val item = itemView.tag as PlaceholderContent.PlaceholderItem
             val bundle = Bundle()
             bundle.putString(
-                    ItemDetailFragment.ARG_ITEM_ID,
+                ItemDetailFragment.ARG_ITEM_ID,
                     item.id
             )
             if (itemDetailFragmentContainer != null) {
@@ -97,11 +84,6 @@ class ItemListFragment : Fragment() {
             }
         }
 
-        /**
-         * Context click listener to handle Right click events
-         * from mice and trackpad input to provide a more native
-         * experience on larger screen devices
-         */
         val onContextClickListener = View.OnContextClickListener { v ->
             val item = v.tag as PlaceholderContent.PlaceholderItem
             Toast.makeText(
@@ -119,7 +101,6 @@ class ItemListFragment : Fragment() {
             onClickListener: View.OnClickListener,
             onContextClickListener: View.OnContextClickListener
     ) {
-
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(
                 PlaceholderContent.ITEMS,
                 onClickListener,

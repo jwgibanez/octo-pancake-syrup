@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/item_list_fragment"
-        android:name="io.github.jwgibanez.contacts.ItemListFragment"
+        android:name="io.github.jwgibanez.contacts.view.ItemListFragment"
         android:label="ItemListFragment">
         <action
             android:id="@+id/show_item_detail"
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/item_detail_fragment"
-        android:name="io.github.jwgibanez.contacts.ItemDetailFragment"
+        android:name="io.github.jwgibanez.contacts.view.ItemDetailFragment"
         android:label="item_detail"
         tools:layout="@layout/fragment_item_detail">
         <argument

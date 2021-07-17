@@ -1,8 +1,7 @@
-package io.github.jwgibanez.contacts
+package io.github.jwgibanez.contacts.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
