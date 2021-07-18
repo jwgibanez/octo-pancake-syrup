@@ -53,6 +53,7 @@
                     android:id="@+id/add_photo"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="@id/avatar"
                     app:layout_constraintBottom_toBottomOf="@+id/avatar"
                     android:padding="8dp"
@@ -125,6 +126,8 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_layout"
+                android:visibility="gone"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,6 +136,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/email"
+                    android:enabled="false"
                     android:inputType="textEmailAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

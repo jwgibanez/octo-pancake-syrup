@@ -3,6 +3,7 @@ package io.github.jwgibanez.contacts.view
 import android.os.Bundle
 import android.view.*
 import android.view.View.VISIBLE
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -13,6 +14,7 @@ import io.github.jwgibanez.contacts.utils.loadImage
 import io.github.jwgibanez.contacts.utils.showDialog
 import io.github.jwgibanez.contacts.utils.toast
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
+import android.content.Context.INPUT_METHOD_SERVICE
 
 class ItemFormFragment : Fragment() {
 
@@ -45,7 +47,10 @@ class ItemFormFragment : Fragment() {
                 binding.lastName.setText(last_name ?: "")
                 binding.mobileLayout.visibility = VISIBLE
                 binding.mobile.setText(id.toString()) // ID in place of mobile number
-                binding.email.setText(email ?: "")
+                if (email?.isBlank() == false) {
+                    binding.emailLayout.visibility = VISIBLE
+                    binding.email.setText(email ?: "")
+                }
                 binding.addPhoto.setOnClickListener { toast(requireContext(), "Add photo clicked.") }
             }
         }
@@ -80,6 +85,8 @@ class ItemFormFragment : Fragment() {
     }
 
     private fun save() {
+        dismissKeyboard()
+
         val user = UserRequest()
 
         if (binding.firstName.text?.isNotEmpty() == true) {
@@ -98,9 +105,6 @@ class ItemFormFragment : Fragment() {
 
         if (binding.email.text?.isNotEmpty() == true) {
             user.email = binding.email.text?.trim().toString()
-        } else {
-            viewModel.error.value = "Last name must not be empty."
-            return
         }
 
         val userId = viewModel.user.value?.id
@@ -122,6 +126,13 @@ class ItemFormFragment : Fragment() {
                     NavHostFragment.findNavController(this).navigate(R.id.add_save)
                 }
             }
+        }
+    }
+
+    private fun dismissKeyboard() {
+        activity?.apply {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+            imm?.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }
 
