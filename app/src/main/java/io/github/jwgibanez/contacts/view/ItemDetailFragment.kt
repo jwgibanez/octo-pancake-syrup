@@ -14,6 +14,7 @@ import io.github.jwgibanez.contacts.utils.loadImage
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 import android.view.*
 import android.widget.Toast
+import androidx.navigation.fragment.NavHostFragment
 
 class ItemDetailFragment : Fragment() {
 
@@ -52,7 +53,7 @@ class ItemDetailFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.edit -> {
-                Toast.makeText(requireContext(), "TODO", Toast.LENGTH_SHORT).show()
+                NavHostFragment.findNavController(this).navigate(R.id.show_item_edit)
                 true
             }
             else -> super.onOptionsItemSelected(item)

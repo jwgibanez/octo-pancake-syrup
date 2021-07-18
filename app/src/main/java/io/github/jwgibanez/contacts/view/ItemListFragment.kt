@@ -92,7 +92,8 @@ class ItemListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.add -> {
-                Toast.makeText(requireContext(), "TODO", Toast.LENGTH_SHORT).show()
+                viewModel.user.value = null
+                findNavController(this).navigate(R.id.show_item_add)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/item_list_fragment">
-
     <fragment
         android:id="@+id/item_list_fragment"
         android:name="io.github.jwgibanez.contacts.view.ItemListFragment"
@@ -12,11 +11,41 @@
         <action
             android:id="@+id/show_item_detail"
             app:destination="@id/item_detail_fragment" />
+        <action
+            android:id="@+id/show_item_add"
+            app:destination="@id/item_form_add_fragment" />
     </fragment>
     <fragment
         android:id="@+id/item_detail_fragment"
         android:name="io.github.jwgibanez.contacts.view.ItemDetailFragment"
         android:label="Contact Details"
         tools:layout="@layout/fragment_item_detail">
+        <action
+            android:id="@+id/show_item_edit"
+            app:destination="@id/item_form_edit_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/item_form_add_fragment"
+        android:name="io.github.jwgibanez.contacts.view.ItemFormFragment"
+        android:label="New Contact"
+        tools:layout="@layout/fragment_item_form">
+        <action
+            android:id="@+id/add_cancel"
+            app:popUpTo="@+id/item_list_fragment"/>
+        <action
+            android:id="@+id/add_save"
+            app:popUpTo="@+id/item_list_fragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/item_form_edit_fragment"
+        android:name="io.github.jwgibanez.contacts.view.ItemFormFragment"
+        android:label="Edit Contact"
+        tools:layout="@layout/fragment_item_form">
+        <action
+            android:id="@+id/edit_cancel"
+            app:popUpTo="@+id/item_detail_fragment"/>
+        <action
+            android:id="@+id/edit_save"
+            app:popUpTo="@+id/item_detail_fragment"/>
     </fragment>
 </navigation>

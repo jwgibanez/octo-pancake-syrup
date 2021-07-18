@@ -1,11 +1,15 @@
 package io.github.jwgibanez.contacts.utils
 
+import android.content.res.Resources
+import android.graphics.Color
+import android.util.TypedValue
 import android.view.View
 import android.widget.ProgressBar
 import androidx.core.content.ContextCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import io.github.jwgibanez.contacts.R
 import java.lang.Exception
 
 fun loadImage(
