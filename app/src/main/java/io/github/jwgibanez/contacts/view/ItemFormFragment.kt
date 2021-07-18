@@ -11,6 +11,7 @@ import io.github.jwgibanez.contacts.databinding.FragmentItemFormBinding
 import io.github.jwgibanez.contacts.service.request.UserRequest
 import io.github.jwgibanez.contacts.utils.loadImage
 import io.github.jwgibanez.contacts.utils.showDialog
+import io.github.jwgibanez.contacts.utils.toast
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 
 class ItemFormFragment : Fragment() {
@@ -35,7 +36,6 @@ class ItemFormFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewModel.user.observe(viewLifecycleOwner) { user ->
             user?.apply {
                 avatar?.let {
@@ -46,6 +46,7 @@ class ItemFormFragment : Fragment() {
                 binding.mobileLayout.visibility = VISIBLE
                 binding.mobile.setText(id.toString()) // ID in place of mobile number
                 binding.email.setText(email ?: "")
+                binding.addPhoto.setOnClickListener { toast(requireContext(), "Add photo clicked.") }
             }
         }
     }

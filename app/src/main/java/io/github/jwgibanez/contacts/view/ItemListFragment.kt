@@ -50,7 +50,7 @@ class ItemListFragment : Fragment() {
             }
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                Toast.makeText(context, "Fact deleted.", Toast.LENGTH_SHORT).show()
+                // Do nothing
             }
         })
 

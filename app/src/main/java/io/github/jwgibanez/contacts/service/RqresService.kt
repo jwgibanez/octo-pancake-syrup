@@ -11,6 +11,12 @@ interface RqresService {
     @GET("users?per_page=10")
     fun getUsers() : Observable<Response<User>>
 
+    @GET("users")
+    fun getUsersByPage(
+        @Query("per_page") size: Int = 10,
+        @Query("page") page: Int
+    ) : Observable<Response<User>>
+
     @POST("users")
     fun postUser(@Body user: UserRequest) : Observable<User>
 

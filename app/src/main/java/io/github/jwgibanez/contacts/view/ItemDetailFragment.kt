@@ -15,6 +15,7 @@ import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 import android.view.*
 import androidx.navigation.fragment.NavHostFragment
 import io.github.jwgibanez.contacts.utils.showDialog
+import io.github.jwgibanez.contacts.utils.toast
 
 class ItemDetailFragment : Fragment() {
 
@@ -42,6 +43,11 @@ class ItemDetailFragment : Fragment() {
             viewModel.user.observe(viewLifecycleOwner) { updateView(it) }
         } else {
             viewModel.error.value = getString(R.string.generic_error_message)
+        }
+        binding.apply {
+            icMessage?.setOnClickListener { toast(requireContext(), "Message clicked.") }
+            icCall?.setOnClickListener { toast(requireContext(), "Call clicked.") }
+            icEmail?.setOnClickListener { toast(requireContext(), "Email clicked.") }
         }
     }
 

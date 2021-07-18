@@ -13,6 +13,8 @@ import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Repository(
@@ -27,6 +29,43 @@ class Repository(
                 activity,
                 {
                     service.getUsers().safeSubscribe(object : Observer<Response<User>> {
+                        override fun onSubscribe(d: Disposable) {
+                            viewModel.loading.postValue(true)
+                        }
+
+                        override fun onNext(value: Response<User>) {
+                            if (value.total_pages > 1) {
+                                for (i in 2..value.total_pages)
+                                    GlobalScope.launch {
+                                        fetchUsers(activity, i)
+                                    }
+                            }
+
+                            AppDatabase.databaseWriteExecutor.execute {
+                                db.userDao().insertList(value.data)
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            viewModel.error.postValue(e.message)
+                        }
+
+                        override fun onComplete() {
+                            viewModel.loading.postValue(false)
+                        }
+                    })
+                },
+                { error -> viewModel.error.postValue(error) }
+            )
+        }
+    }
+
+    private suspend fun fetchUsers(activity: Activity, page: Int) {
+        withContext(Dispatchers.IO) {
+            isNetworkConnected(
+                activity,
+                {
+                    service.getUsersByPage(page = page).safeSubscribe(object : Observer<Response<User>> {
                         override fun onSubscribe(d: Disposable) {
                             viewModel.loading.postValue(true)
                         }
