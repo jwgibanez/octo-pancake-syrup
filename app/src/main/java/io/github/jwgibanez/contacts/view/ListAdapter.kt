@@ -1,5 +1,6 @@
 package io.github.jwgibanez.contacts.view
 
+import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 
 import android.view.ViewGroup
@@ -9,11 +10,12 @@ import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 
 class ListAdapter(
     private val viewModel: ContactsViewModel,
+    private val onItemClick: (User) -> Unit,
     diffCallback: DiffUtil.ItemCallback<User>
 ) : ListAdapter<User, ItemViewHolder?>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        return ItemViewHolder.create(parent)
+        return ItemViewHolder.create(parent, onItemClick)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {

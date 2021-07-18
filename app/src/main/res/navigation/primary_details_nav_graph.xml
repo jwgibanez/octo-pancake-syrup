@@ -16,11 +16,7 @@
     <fragment
         android:id="@+id/item_detail_fragment"
         android:name="io.github.jwgibanez.contacts.view.ItemDetailFragment"
-        android:label="item_detail"
+        android:label="Contact Details"
         tools:layout="@layout/fragment_item_detail">
-        <argument
-            android:name="item_id"
-            android:defaultValue=""
-            app:argType="string" />
     </fragment>
 </navigation>

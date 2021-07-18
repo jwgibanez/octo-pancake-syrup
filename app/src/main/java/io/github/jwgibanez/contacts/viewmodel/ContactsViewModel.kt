@@ -24,9 +24,10 @@ class ContactsViewModel @Inject constructor(
 
     private val repository = Repository(this, database, service)
 
-    var users: LiveData<List<User>> = database.userDao().all()
-    var error = MutableLiveData<String?>(null)
-    var loading = MutableLiveData(false)
+    val users = database.userDao().all()
+    val user = MutableLiveData<User?>(null)
+    val error = MutableLiveData<String?>(null)
+    val loading = MutableLiveData(false)
 
     override fun onCleared() {
         super.onCleared()

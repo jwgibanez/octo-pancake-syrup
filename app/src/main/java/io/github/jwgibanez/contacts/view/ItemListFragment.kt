@@ -1,30 +1,21 @@
 package io.github.jwgibanez.contacts.view
 
-import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.ViewGroup
-import android.widget.TextView
+import android.view.*
 import android.widget.Toast
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import io.github.jwgibanez.contacts.R
-import io.github.jwgibanez.contacts.placeholder.PlaceholderContent
 import io.github.jwgibanez.contacts.databinding.FragmentItemListBinding
-import io.github.jwgibanez.contacts.databinding.ItemListContentBinding
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 import androidx.recyclerview.widget.DividerItemDecoration
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
-
+import io.github.jwgibanez.contacts.service.model.User
 
 class ItemListFragment : Fragment() {
 
@@ -32,6 +23,11 @@ class ItemListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ContactsViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +42,7 @@ class ItemListFragment : Fragment() {
 
         val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
-        val adapter = ListAdapter(viewModel, ListAdapter.Diff())
+        val adapter = ListAdapter(viewModel, { user -> onItemClick(user) }, ListAdapter.Diff())
         adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 // Scroll to newly added item
@@ -70,6 +66,37 @@ class ItemListFragment : Fragment() {
         binding.itemList.addItemDecoration(decoration)
 
         viewModel.fetchUsers(requireActivity())
+    }
+
+    private fun onItemClick(user: User) {
+        viewModel.user.value = user
+
+        // Leaving this not using view binding as it relies on if the view is visible the current
+        // layout configuration (layout, layout-sw600dp)
+        val itemDetailFragmentContainer: View? = view?.findViewById(R.id.item_detail_nav_container)
+
+        val bundle = Bundle()
+        if (itemDetailFragmentContainer != null) {
+            itemDetailFragmentContainer.findNavController()
+                .navigate(R.id.fragment_item_detail, bundle)
+        } else {
+            findNavController(this).navigate(R.id.show_item_detail, bundle)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_list, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.add -> {
+                Toast.makeText(requireContext(), "TODO", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onDestroyView() {
