@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -14,36 +16,22 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import io.github.jwgibanez.contacts.R
-import io.github.jwgibanez.contacts.placeholder.PlaceholderContent;
+import io.github.jwgibanez.contacts.placeholder.PlaceholderContent
 import io.github.jwgibanez.contacts.databinding.FragmentItemListBinding
 import io.github.jwgibanez.contacts.databinding.ItemListContentBinding
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
+import androidx.recyclerview.widget.DividerItemDecoration
+
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+
 
 class ItemListFragment : Fragment() {
 
-    private val viewModel: ContactsViewModel by activityViewModels()
-
-    private val unhandledKeyEventListenerCompat = ViewCompat.OnUnhandledKeyEventListenerCompat { v, event ->
-        if (event.keyCode == KeyEvent.KEYCODE_Z && event.isCtrlPressed) {
-            Toast.makeText(
-                    v.context,
-                    "Undo (Ctrl + Z) shortcut triggered",
-                    Toast.LENGTH_LONG
-            ).show()
-            true
-        } else if (event.keyCode == KeyEvent.KEYCODE_F && event.isCtrlPressed) {
-            Toast.makeText(
-                    v.context,
-                    "Find (Ctrl + F) shortcut triggered",
-                    Toast.LENGTH_LONG
-            ).show()
-            true
-        }
-        false
-    }
-
     private var _binding: FragmentItemListBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ContactsViewModel by activityViewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -56,93 +44,32 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.fetchUsers()
+        val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 
-        ViewCompat.addOnUnhandledKeyEventListener(view, unhandledKeyEventListenerCompat)
-
-        val recyclerView: RecyclerView = binding.itemList
-
-        // Leaving this not using view binding as it relies on if the view is visible the current
-        // layout configuration (layout, layout-sw600dp)
-        val itemDetailFragmentContainer: View? = view.findViewById(R.id.item_detail_nav_container)
-
-        /** Click Listener to trigger navigation based on if you have
-         * a single pane layout or two pane layout
-         */
-        val onClickListener = View.OnClickListener { itemView ->
-            val item = itemView.tag as PlaceholderContent.PlaceholderItem
-            val bundle = Bundle()
-            bundle.putString(
-                ItemDetailFragment.ARG_ITEM_ID,
-                    item.id
-            )
-            if (itemDetailFragmentContainer != null) {
-                itemDetailFragmentContainer.findNavController()
-                        .navigate(R.id.fragment_item_detail, bundle)
-            } else {
-                itemView.findNavController().navigate(R.id.show_item_detail, bundle)
+        val adapter = ListAdapter(viewModel, ListAdapter.Diff())
+        adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                // Scroll to newly added item
+                layoutManager.scrollToPositionWithOffset(positionStart, 0)
             }
-        }
 
-        val onContextClickListener = View.OnContextClickListener { v ->
-            val item = v.tag as PlaceholderContent.PlaceholderItem
-            Toast.makeText(
-                    v.context,
-                    "Context click of item " + item.id,
-                    Toast.LENGTH_LONG
-            ).show()
-            true
-        }
-        setupRecyclerView(recyclerView, onClickListener, onContextClickListener)
-    }
-
-    private fun setupRecyclerView(
-            recyclerView: RecyclerView,
-            onClickListener: View.OnClickListener,
-            onContextClickListener: View.OnContextClickListener
-    ) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(
-                PlaceholderContent.ITEMS,
-                onClickListener,
-                onContextClickListener
-        )
-    }
-
-    class SimpleItemRecyclerViewAdapter(
-            private val values: List<PlaceholderContent.PlaceholderItem>,
-            private val onClickListener: View.OnClickListener,
-            private val onContextClickListener: View.OnContextClickListener
-    ) :
-            RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
-            val binding = ItemListContentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ViewHolder(binding)
-
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = values[position]
-            holder.idView.text = item.id
-            holder.contentView.text = item.content
-
-            with(holder.itemView) {
-                tag = item
-                setOnClickListener(onClickListener)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    setOnContextClickListener(onContextClickListener)
-                }
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                Toast.makeText(context, "Fact deleted.", Toast.LENGTH_SHORT).show()
             }
+        })
+
+        viewModel.users.observe(viewLifecycleOwner) { facts ->
+            //binding.emptyMessage.setVisibility(if (facts.size() > 0) GONE else VISIBLE)
+            adapter.submitList(facts)
         }
 
-        override fun getItemCount() = values.size
+        binding.itemList.adapter = adapter
+        binding.itemList.layoutManager = layoutManager
 
-        inner class ViewHolder(binding: ItemListContentBinding) : RecyclerView.ViewHolder(binding.root) {
-            val idView: TextView = binding.idText
-            val contentView: TextView = binding.content
-        }
+        val decoration = DividerItemDecoration(binding.itemList.context, DividerItemDecoration.VERTICAL)
+        binding.itemList.addItemDecoration(decoration)
 
+        viewModel.fetchUsers(requireActivity())
     }
 
     override fun onDestroyView() {

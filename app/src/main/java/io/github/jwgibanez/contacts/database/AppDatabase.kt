@@ -8,7 +8,7 @@ import java.util.concurrent.Executors
 
 @Database(entities = [User::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun userDao(): UserDao?
+    abstract fun userDao(): UserDao
 
     companion object {
         const val DB_NAME = "app-db"
