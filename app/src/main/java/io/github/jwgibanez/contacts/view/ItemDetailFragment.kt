@@ -95,9 +95,11 @@ class ItemDetailFragment : Fragment() {
             val pairs = ArrayList<InfoAdapter.ValuePair>()
             // ID in place of mobile number
             pairs.add(InfoAdapter.ValuePair("mobile", user.id.toString()))
-            if (user.email?.isBlank() == false) {
-                pairs.add(InfoAdapter.ValuePair("email", user.email))
-            }
+
+            // Hide email field
+            //if (user.email?.isBlank() == false) {
+            //    pairs.add(InfoAdapter.ValuePair("email", user.email))
+            //}
 
             val ad = InfoAdapter()
             binding.itemList?.apply {

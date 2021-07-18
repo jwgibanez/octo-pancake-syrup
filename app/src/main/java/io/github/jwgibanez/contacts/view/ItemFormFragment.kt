@@ -47,10 +47,11 @@ class ItemFormFragment : Fragment() {
                 binding.lastName.setText(last_name ?: "")
                 binding.mobileLayout.visibility = VISIBLE
                 binding.mobile.setText(id.toString()) // ID in place of mobile number
-                if (email?.isBlank() == false) {
-                    binding.emailLayout.visibility = VISIBLE
-                    binding.email.setText(email ?: "")
-                }
+                // Hide email field
+                ///if (email?.isBlank() == false) {
+                //    binding.emailLayout.visibility = VISIBLE
+                //    binding.email.setText(email ?: "")
+                //}
                 binding.addPhoto.setOnClickListener { toast(requireContext(), "Add photo clicked.") }
             }
         }
