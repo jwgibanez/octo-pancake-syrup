@@ -16,7 +16,7 @@ fun loadImage(
     url: String?,
     imageView: CircleImageView,
     progressBar: ProgressBar?
-) = url?.let {
+) = if (url != null) {
     Picasso.get().load(url).into(
         imageView, object : Callback {
             override fun onSuccess() {
@@ -28,9 +28,17 @@ fun loadImage(
                 imageView.setImageDrawable(
                     ContextCompat.getDrawable(
                         imageView.context,
-                        android.R.drawable.stat_notify_error
+                        R.drawable.ic_head
                     )
                 )
             }
         })
+} else {
+    progressBar?.visibility = View.GONE
+    imageView.setImageDrawable(
+        ContextCompat.getDrawable(
+            imageView.context,
+            R.drawable.ic_head
+        )
+    )
 }

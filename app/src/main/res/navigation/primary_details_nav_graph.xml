@@ -23,6 +23,9 @@
         <action
             android:id="@+id/show_item_edit"
             app:destination="@id/item_form_edit_fragment" />
+        <action
+            android:id="@+id/item_delete"
+            app:popUpTo="@+id/item_list_fragment"/>
     </fragment>
     <fragment
         android:id="@+id/item_form_add_fragment"

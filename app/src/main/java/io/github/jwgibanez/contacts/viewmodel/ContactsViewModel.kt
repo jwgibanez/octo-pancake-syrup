@@ -11,9 +11,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.lifecycle.MutableLiveData
 
-import androidx.lifecycle.LiveData
-
 import android.app.Activity
+import io.github.jwgibanez.contacts.service.request.UserRequest
 
 
 @HiltViewModel
@@ -38,6 +37,37 @@ class ContactsViewModel @Inject constructor(
     fun fetchUsers(activity: Activity) {
         viewModelScope.launch {
             repository.fetchUsers(activity)
+        }
+    }
+
+    fun addUser(
+        activity: Activity,
+        user: UserRequest,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.addUser(activity, user, onSuccess)
+        }
+    }
+
+    fun updateUser(
+        activity: Activity,
+        id: Int,
+        user: UserRequest,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.updateUser(activity, id, user, onSuccess)
+        }
+    }
+
+    fun deleteUser(
+        activity: Activity,
+        id: Int,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.deleteUser(activity, id, onSuccess)
         }
     }
 }

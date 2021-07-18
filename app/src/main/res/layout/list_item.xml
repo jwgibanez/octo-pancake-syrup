@@ -6,7 +6,6 @@
     android:foreground="?selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:background="@color/white"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="16dp"

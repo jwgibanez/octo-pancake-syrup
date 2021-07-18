@@ -10,8 +10,11 @@ interface UserDao {
     fun all(): LiveData<List<User>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(users: List<User>)
+    fun insertList(users: List<User>)
 
-    @Delete
-    fun delete(fact: User)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg user: User)
+
+    @Query("DELETE FROM user WHERE id = :id")
+    fun delete(id: Int)
 }

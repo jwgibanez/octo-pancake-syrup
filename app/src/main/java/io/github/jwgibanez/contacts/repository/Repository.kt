@@ -8,6 +8,7 @@ import io.github.jwgibanez.contacts.database.AppDatabase
 import io.github.jwgibanez.contacts.service.RqresService
 import io.github.jwgibanez.contacts.service.model.Response
 import io.github.jwgibanez.contacts.service.model.User
+import io.github.jwgibanez.contacts.service.request.UserRequest
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -32,7 +33,116 @@ class Repository(
 
                         override fun onNext(value: Response<User>) {
                             AppDatabase.databaseWriteExecutor.execute {
-                                db.userDao().insertAll(value.data)
+                                db.userDao().insertList(value.data)
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            viewModel.error.postValue(e.message)
+                        }
+
+                        override fun onComplete() {
+                            viewModel.loading.postValue(false)
+                        }
+                    })
+                },
+                { error -> viewModel.error.postValue(error) }
+            )
+        }
+    }
+
+    suspend fun addUser(
+        activity: Activity,
+        user: UserRequest,
+        onSuccess: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            isNetworkConnected(
+                activity,
+                {
+                    service.postUser(user).safeSubscribe(object : Observer<User> {
+                        override fun onSubscribe(d: Disposable) {
+                            viewModel.loading.postValue(true)
+                        }
+
+                        override fun onNext(t: User) {
+                            AppDatabase.databaseWriteExecutor.execute {
+                                db.userDao().insertAll(t)
+                                activity.runOnUiThread { onSuccess() }
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            viewModel.error.postValue(e.message)
+                        }
+
+                        override fun onComplete() {
+                            viewModel.loading.postValue(false)
+                        }
+                    })
+                },
+                { error -> viewModel.error.postValue(error) }
+            )
+        }
+    }
+
+    suspend fun updateUser(
+        activity: Activity,
+        id: Int,
+        user: UserRequest,
+        onSuccess: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            isNetworkConnected(
+                activity,
+                {
+                    service.putUser(id, user).safeSubscribe(object : Observer<User> {
+                        override fun onSubscribe(d: Disposable) {
+                            viewModel.loading.postValue(true)
+                        }
+
+                        override fun onNext(t: User) {
+                            AppDatabase.databaseWriteExecutor.execute {
+                                t.id = id
+                                db.userDao().insertAll(t)
+                                viewModel.user.postValue(t)
+                                activity.runOnUiThread { onSuccess() }
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            viewModel.error.postValue(e.message)
+                        }
+
+                        override fun onComplete() {
+                            viewModel.loading.postValue(false)
+                        }
+                    })
+                },
+                { error -> viewModel.error.postValue(error) }
+            )
+        }
+    }
+
+    suspend fun deleteUser(
+        activity: Activity,
+        id: Int,
+        onSuccess: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            isNetworkConnected(
+                activity,
+                {
+                    service.deleteUser(id).safeSubscribe(object : Observer<retrofit2.Response<Void>> {
+                        override fun onSubscribe(d: Disposable) {
+                            viewModel.loading.postValue(true)
+                        }
+
+                        override fun onNext(t: retrofit2.Response<Void>) {
+                            AppDatabase.databaseWriteExecutor.execute {
+                                db.userDao().delete(id)
+                                viewModel.user.postValue(null)
+                                activity.runOnUiThread { onSuccess() }
                             }
                         }
 

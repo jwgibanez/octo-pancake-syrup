@@ -8,7 +8,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import io.github.jwgibanez.contacts.R
 import io.github.jwgibanez.contacts.databinding.FragmentItemFormBinding
+import io.github.jwgibanez.contacts.service.request.UserRequest
 import io.github.jwgibanez.contacts.utils.loadImage
+import io.github.jwgibanez.contacts.utils.showDialog
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 
 class ItemFormFragment : Fragment() {
@@ -55,21 +57,72 @@ class ItemFormFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
-            R.id.cancel -> {
-                NavHostFragment.findNavController(this).navigate(
-                    if (viewModel.user.value != null) R.id.edit_cancel else R.id.add_cancel)
+            android.R.id.home, R.id.cancel -> {
+                showDialog(
+                    requireContext(),
+                    "Warning",
+                    "Data will not be saved.", {
+                        NavHostFragment.findNavController(this).navigate(
+                            if (viewModel.user.value != null) R.id.edit_cancel else R.id.add_cancel)
+                    }, {
+                        // Dismiss
+                    }
+                )
                 true
             }
             R.id.save -> {
-                NavHostFragment.findNavController(this).navigate(
-                    if (viewModel.user.value != null) R.id.edit_save else R.id.add_save)
+                save()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    private fun save() {
+        val user = UserRequest()
 
+        if (binding.firstName.text?.isNotEmpty() == true) {
+            user.first_name = binding.firstName.text?.trim().toString()
+        } else {
+            viewModel.error.value = "First name must not be empty."
+            return
+        }
+
+        if (binding.lastName.text?.isNotEmpty() == true) {
+            user.last_name = binding.lastName.text?.trim().toString()
+        } else {
+            viewModel.error.value = "Last name must not be empty."
+            return
+        }
+
+        if (binding.email.text?.isNotEmpty() == true) {
+            user.email = binding.email.text?.trim().toString()
+        } else {
+            viewModel.error.value = "Last name must not be empty."
+            return
+        }
+
+        val userId = viewModel.user.value?.id
+        if (userId != null) {
+            viewModel.updateUser(requireActivity(), userId, user) {
+                showDialog(
+                    requireContext(),
+                    "Existing Contact",
+                    "Contact details updated.") {
+                    NavHostFragment.findNavController(this).navigate(R.id.edit_save)
+                }
+            }
+        } else {
+            viewModel.addUser(requireActivity(), user) {
+                showDialog(
+                    requireContext(),
+                    "New Contact",
+                    "Contact details added.") {
+                    NavHostFragment.findNavController(this).navigate(R.id.add_save)
+                }
+            }
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

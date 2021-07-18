@@ -13,8 +13,8 @@ import io.github.jwgibanez.contacts.utils.formFullName
 import io.github.jwgibanez.contacts.utils.loadImage
 import io.github.jwgibanez.contacts.viewmodel.ContactsViewModel
 import android.view.*
-import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
+import io.github.jwgibanez.contacts.utils.showDialog
 
 class ItemDetailFragment : Fragment() {
 
@@ -52,6 +52,26 @@ class ItemDetailFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
+            R.id.delete -> {
+                showDialog(
+                    requireContext(),
+                    "Existing Contact",
+                    "Are you sure you want to delete?",
+                    {
+                        val id = viewModel.user.value?.id
+                        if (id != null) {
+                            viewModel.deleteUser(requireActivity(), id) {
+                                NavHostFragment.findNavController(this).navigate(R.id.item_delete)
+                            }
+                        } else {
+                            NavHostFragment.findNavController(this).navigate(R.id.item_delete)
+                        }
+                    }, {
+                        // Dismiss
+                    }
+                )
+                true
+            }
             R.id.edit -> {
                 NavHostFragment.findNavController(this).navigate(R.id.show_item_edit)
                 true
